@@ -31,9 +31,10 @@ while True:
 
     if responder in socks:
         message = responder.recv()
+        print('--------------------------------')
         logging.info("Normal request (%s)", message)
         time.sleep(5)
-        logging.info("sent request (%s)", message)
+        logging.info("Sent request (%s)", message)
         responder.send(message)
         # process task
 
