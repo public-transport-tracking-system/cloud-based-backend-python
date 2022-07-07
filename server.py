@@ -33,7 +33,7 @@ while True:
         message = responder.recv()
         print('--------------------------------')
         logging.info("Normal request (%s)", message)
-        time.sleep(5)
+        time.sleep(2)
         logging.info("Sent request (%s)", message)
         responder.send(message)
         # process task
