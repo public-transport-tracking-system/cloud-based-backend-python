@@ -1,4 +1,4 @@
 class Sensor(object):
-    def __init__(self, average_speed, route_id):
-        self.average_speed = average_speed
-        self.route_id = route_id
+    def __init__(self, bus_id):
+        #self.average_speed = average_speed
+        self.bus_id = bus_id
