@@ -4,6 +4,9 @@ import logging
 import time
 import zmq
 import json
+from utils.RepeatTimer import RepeatTimer
+import os
+from collections import namedtuple
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
@@ -14,13 +17,25 @@ responder.bind("tcp://*:5555")
 subscriber = context.socket(zmq.SUB)
 subscriber.connect("tcp://localhost:5556")
 
-subscriber.setsockopt(zmq.SUBSCRIBE, b"100")
-subscriber.setsockopt(zmq.SUBSCRIBE, b"101")
-subscriber.setsockopt(zmq.SUBSCRIBE, b"102")
+subscriber.setsockopt(zmq.SUBSCRIBE, b"1")
 
 poller = zmq.Poller()
 poller.register(responder, zmq.POLLIN)
 poller.register(subscriber, zmq.POLLIN)
+
+dataFromClient = {}
+
+def displayData(dataFromClient):
+    os.system('clear')
+    for k, v in dataFromClient.items():
+        number = len(v)
+        print ("{:<8} {:<15}".format(k, number))
+
+timer = RepeatTimer(1,displayData, (dataFromClient,))  
+timer.start()
+
+def customRouteDecoder(routeDic):
+    return namedtuple('X', routeDic.keys())(*routeDic.values())
 
 # Process messages from both sockets
 while True:
@@ -31,36 +46,19 @@ while True:
 
     if responder in socks:
         message = responder.recv()
-        print('--------------------------------')
-        logging.info("Normal request (%s)", message)
+        # simulate latency
         time.sleep(2)
-        logging.info("Sent request (%s)", message)
         responder.send(message)
-        # process task
 
     if subscriber in socks:
-        message = subscriber.recv()
-        logging.info("Publish request (%s)", message)
-        # process weather update
-
-# def restartServerAfterCrash():
-#     responder.setsockopt(zmq.LINGER, 0)
-#     responder.close()
-#     context = zmq.Context()
-#     responder = context.socket(zmq.REP)
-#     responder.bind("tcp://*:5555")
-
-
-# for cycles in itertools.count():
-#     request = responder.recv()
-#     #Simulate various problems, after a few cycles
-#     if cycles > 10 and randint(0, 3) == 0:
-#         logging.info("Simulating a crash")
-#         time.sleep(10)
-#         restartServerAfterCrash()
-#     else:
-#         logging.info("Normal request (%s)", request)
-#         time.sleep(1)  # Do some heavy work
-#         responder.send(request)
-
-
+        message = subscriber.recv_string()
+        data = message.split("/")
+        routeInfo = json.loads(data[1], object_hook=customRouteDecoder)
+        for route in routeInfo:
+            currentRoute = route.dataFromSensor.bus_id
+            if currentRoute in dataFromClient:
+                pending = dataFromClient.get(currentRoute)
+                pending.append(route)
+                dataFromClient[currentRoute] = pending
+            else:
+                dataFromClient[currentRoute] = [route]
