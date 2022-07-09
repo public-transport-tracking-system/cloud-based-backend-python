@@ -13,9 +13,10 @@ logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 context = zmq.Context()
 responder = context.socket(zmq.REP)
 responder.bind("tcp://*:5555")
-
+logging.info("Waiting for client")
 subscriber = context.socket(zmq.SUB)
-subscriber.connect("tcp://localhost:5556")
+subscriber.bind("tcp://*:5556")
+subscriber.connect("tcp://127.0.0.1:5556")
 
 subscriber.setsockopt(zmq.SUBSCRIBE, b"1")
 
