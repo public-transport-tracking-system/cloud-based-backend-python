@@ -1,1 +1,2 @@
 pyzmq
+prettytable==0.7.2
