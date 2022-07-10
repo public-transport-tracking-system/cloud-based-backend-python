@@ -1,5 +1,5 @@
 class Client(object):
-    def __init__(self, id, precipitation, dataFromSensor):
+    def __init__(self, id, name, dataFromSensor):
         self.id = id
-        self.precipitation = precipitation
+        self.name = name
         self.dataFromSensor = dataFromSensor
