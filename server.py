@@ -72,8 +72,6 @@ while True:
             existingSet = stationsToSendInfo[route_id]
             existingSet.add(bus_id)
             stationsToSendInfo[route_id] = existingSet
-        
-        print(stationsToSendInfo)
 
         responder.send_string(bus_id)
 
