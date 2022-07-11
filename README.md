@@ -1,4 +1,4 @@
-# Fog Computing Prototype
+# Fog Computing Prototype - SERVER
 
 ### Introduction
 In this repo you will find the server code of the project. 
